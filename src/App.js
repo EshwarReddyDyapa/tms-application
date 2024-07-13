@@ -4,6 +4,7 @@ import {Link, Route, Routes} from 'react-router-dom';
 import './App.css';
 import EmployeeDetail from './services/EmployeeDetail';
 import ManagerDetail from './services/ManagerDetail';
+import Admin from './Admin';
 
 
 function Navigate() {
@@ -14,8 +15,8 @@ function Navigate() {
           Home
         </Link>
         <div className="page-routes me-4">
-          <Link className="nav-link" to="/about">
-            About
+          <Link className="nav-link" to="/admin">
+            Admin Page
           </Link>
         </div>
       </nav>
@@ -32,6 +33,7 @@ function App() {
     <div className="container main-content">
     <Routes>
       <Route path='/' element={<DisplayAllEmployees emp={data} setEmp={setData}/>}/>
+      <Route path='/admin' element={<Admin/>}/>
       <Route path='/employee/:id' element={<EmployeeDetail/>}/>
       <Route path='/manager/:id' element={<ManagerDetail/>}/>
     </Routes>
