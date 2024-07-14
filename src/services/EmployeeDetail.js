@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import Notes from "./DisplayNote";
 import { Modal, Button, Form } from "react-bootstrap";
 
 export default function EmployeeDetail() {
@@ -124,9 +125,9 @@ export default function EmployeeDetail() {
       <div className="employee-list">
         <h2 className="mx-2 mt-3">Employee Detail</h2>
         <div className="mx-2 my-2 px-3 py-3">
-          <p>Name: {employee.name}</p>
-          <p>Position: {employee.position}</p>
-          <p>Manager: {employee.managerId}</p>
+          <p><strong>Name: </strong> {employee.name}</p>
+          <p><strong>Position: </strong>  {employee.position}</p>
+          {/* <p>Manager: {employee.managerId}</p> */}
         </div>
       </div>
 
@@ -138,7 +139,7 @@ export default function EmployeeDetail() {
               <ul className="ps-0">
                 {tasks.map((task) => (
                   <li key={task.id} className="list-item">
-                    <div className="task-detail">
+                    <div className={`task-detail ${task.isCompleted ? 'completed' : ''}`}>
                       <div className="task-detail-item">
                         <h5>{task.title}</h5>
                         <p>{task.description}</p>
@@ -146,15 +147,27 @@ export default function EmployeeDetail() {
                           Due Date:{" "}
                           {new Date(task.dueDate).toLocaleDateString()}
                         </p>
+                        {/* <p>Completed: {task.isCompleted ? "Yes" : "No"}</p> */}
                         <p>Completed: {task.isCompleted ? "Yes" : "No"}</p>
                       </div>
                       <div>
-                        <Button className="btn btn-info mx-2 my-2"
+                      <Button
+                          className="btn btn-info mx-2 my-2"
                           onClick={() => markTaskCompleted(task.id)}
                           disabled={task.isCompleted}>
+                          Upload file
+                        </Button>
+                        <Button
+                          className="btn btn-info mx-2 my-2"
+                          onClick={() => markTaskCompleted(task.id)}
+                          disabled={task.isCompleted}
+                        >
                           Mark as Completed
                         </Button>
-                        <Button className="btn btn-info mx-2 my-2" onClick={() => handleShowModal(task)}>
+                        <Button
+                          className="btn btn-info mx-2 my-2"
+                          onClick={() => handleShowModal(task)}
+                        >
                           Show Notes
                         </Button>
                       </div>
@@ -215,8 +228,7 @@ export default function EmployeeDetail() {
           <Modal.Title>Notes for {currentTask?.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {/* Add your notes display logic here */}
-          <p>Notes content goes here...</p>
+          <Notes taskId={currentTask?.id} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseModal}>
