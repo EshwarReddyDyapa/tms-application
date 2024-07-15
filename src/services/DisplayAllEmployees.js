@@ -6,7 +6,7 @@ const navigate = useNavigate();
 
   useEffect(() => {
     fetchData();
-  });
+  }, []);
 
   const fetchData = async () => {
     try {

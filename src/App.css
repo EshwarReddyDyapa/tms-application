@@ -69,3 +69,7 @@
 .completed{
   background-color: #d7f9d7;
 }
+
+.expired-task{
+  background-color: rgb(232, 183, 183);
+}

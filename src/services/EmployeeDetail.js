@@ -16,6 +16,8 @@ export default function EmployeeDetail() {
     isCompleted: false,
     employeeId: id,
   });
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [visibleFileInput, setVisibleFileInput] = useState(null);
 
   useEffect(() => {
     fetchEmployeeData(id);
@@ -58,7 +60,10 @@ export default function EmployeeDetail() {
     setCurrentTask(task);
     setShowModal(true);
   };
-  const handleCloseModal = () => setShowModal(false);
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
 
   const markTaskCompleted = async (taskId) => {
     try {
@@ -116,6 +121,42 @@ export default function EmployeeDetail() {
     }
   };
 
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleFileUpload = async (taskId) => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("taskId", taskId);
+
+    try {
+      const response = await fetch(
+        `https://localhost:7237/api/TaskManagement/UploadFile`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      // Fetch updated tasks after file upload
+      fetchTasks(id);
+      setVisibleFileInput(null);
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
+  const handleCancelUpload = () => {
+    setVisibleFileInput(null);
+    setSelectedFile(null);
+  };
+
   if (!employee) {
     return <div>Loading...</div>;
   }
@@ -125,9 +166,12 @@ export default function EmployeeDetail() {
       <div className="employee-list">
         <h2 className="mx-2 mt-3">Employee Detail</h2>
         <div className="mx-2 my-2 px-3 py-3">
-          <p><strong>Name: </strong> {employee.name}</p>
-          <p><strong>Position: </strong>  {employee.position}</p>
-          {/* <p>Manager: {employee.managerId}</p> */}
+          <p>
+            <strong>Name: </strong> {employee.name}
+          </p>
+          <p>
+            <strong>Position: </strong> {employee.position}
+          </p>
         </div>
       </div>
 
@@ -139,7 +183,11 @@ export default function EmployeeDetail() {
               <ul className="ps-0">
                 {tasks.map((task) => (
                   <li key={task.id} className="list-item">
-                    <div className={`task-detail ${task.isCompleted ? 'completed' : ''}`}>
+                    <div
+                      className={`task-detail ${
+                        task.isCompleted ? "completed" : ""
+                      }`}
+                    >
                       <div className="task-detail-item">
                         <h5>{task.title}</h5>
                         <p>{task.description}</p>
@@ -147,16 +195,38 @@ export default function EmployeeDetail() {
                           Due Date:{" "}
                           {new Date(task.dueDate).toLocaleDateString()}
                         </p>
-                        {/* <p>Completed: {task.isCompleted ? "Yes" : "No"}</p> */}
                         <p>Completed: {task.isCompleted ? "Yes" : "No"}</p>
                       </div>
                       <div>
-                      <Button
-                          className="btn btn-info mx-2 my-2"
-                          onClick={() => markTaskCompleted(task.id)}
-                          disabled={task.isCompleted}>
-                          Upload file
-                        </Button>
+                        {visibleFileInput === task.id ? (
+                          <div>
+                            <Form.Group controlId={`formFile${task.id}`}>
+                              <Form.Control
+                                type="file"
+                                onChange={handleFileChange}
+                              />
+                            </Form.Group>
+                            <Button
+                              className="btn btn-sm btn-info mx-2 my-2"
+                              onClick={() => handleFileUpload(task.id)}
+                            >
+                              Upload Files
+                            </Button>
+                            <Button
+                              className="btn btn-sm btn-danger mx-2 my-2"
+                              onClick={handleCancelUpload}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        ) : (
+                          <Button
+                            className="btn btn-info mx-2 my-2"
+                            onClick={() => setVisibleFileInput(task.id)}
+                          >
+                            Upload File
+                          </Button>
+                        )}
                         <Button
                           className="btn btn-info mx-2 my-2"
                           onClick={() => markTaskCompleted(task.id)}
