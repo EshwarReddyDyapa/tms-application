@@ -16,8 +16,8 @@ export default function EmployeeDetail() {
     isCompleted: false,
     employeeId: id,
   });
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [visibleFileInput, setVisibleFileInput] = useState(null);
+  // const [selectedFile, setSelectedFile] = useState(null);
+  // const [visibleFileInput, setVisibleFileInput] = useState(null);
 
   useEffect(() => {
     fetchEmployeeData(id);
@@ -121,41 +121,41 @@ export default function EmployeeDetail() {
     }
   };
 
-  const handleFileChange = (e) => {
-    setSelectedFile(e.target.files[0]);
-  };
+  // const handleFileChange = (e) => {
+  //   setSelectedFile(e.target.files[0]);
+  // };
 
-  const handleFileUpload = async (taskId) => {
-    if (!selectedFile) return;
+  // const handleFileUpload = async (taskId) => {
+  //   if (!selectedFile) return;
 
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("taskId", taskId);
+  //   const formData = new FormData();
+  //   formData.append("file", selectedFile);
+  //   formData.append("taskId", taskId);
 
-    try {
-      const response = await fetch(
-        `https://localhost:7237/api/TaskManagement/UploadFile`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      // Fetch updated tasks after file upload
-      fetchTasks(id);
-      setVisibleFileInput(null);
-      setSelectedFile(null);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
-  };
+  //   try {
+  //     const response = await fetch(
+  //       `https://localhost:7237/api/TaskManagement/UploadFile`,
+  //       {
+  //         method: "POST",
+  //         body: formData,
+  //       }
+  //     );
+  //     if (!response.ok) {
+  //       throw new Error("Network response was not ok");
+  //     }
+  //     // Fetch updated tasks after file upload
+  //     fetchTasks(id);
+  //     setVisibleFileInput(null);
+  //     setSelectedFile(null);
+  //   } catch (error) {
+  //     console.error("Error uploading file:", error);
+  //   }
+  // };
 
-  const handleCancelUpload = () => {
-    setVisibleFileInput(null);
-    setSelectedFile(null);
-  };
+  // const handleCancelUpload = () => {
+  //   setVisibleFileInput(null);
+  //   setSelectedFile(null);
+  // };
 
   if (!employee) {
     return <div>Loading...</div>;
