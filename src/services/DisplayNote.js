@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Button, Form } from "react-bootstrap";
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
-
 
 export default function Notes({ taskId }) {
   const [task, setTask] = useState(null);
@@ -12,6 +10,7 @@ export default function Notes({ taskId }) {
     content: "",
     pathToDoc: "",
   });
+  const [selectedFile, setSelectedFile] = useState(null);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editNotes, setEditNotes] = useState([]);
 
@@ -45,7 +44,6 @@ export default function Notes({ taskId }) {
       setEditNotes([]);
     }
   };
-  
 
   const handleAddNote = async () => {
     try {
@@ -54,10 +52,10 @@ export default function Notes({ taskId }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          content: newNote.content, 
-          pathToDoc: newNote.pathToDoc, 
-          taskId 
+        body: JSON.stringify({
+          content: newNote.content,
+          pathToDoc: newNote.pathToDoc,
+          taskId,
         }),
       });
       if (!response.ok) {
@@ -73,9 +71,36 @@ export default function Notes({ taskId }) {
     }
   };
 
+  const handleFileChange = (e) => {
+    setSelectedFile(e.target.files[0]);
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile) return;
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+    formData.append("taskId", taskId);
+    formData.append("content", "DOC");
+
+    try {
+      const response = await fetch(`https://localhost:7237/api/TaskManagement/UploadFile`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      setSelectedFile(null);
+      fetchNotes(taskId);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+
   const handleEditNotes = async () => {
     try {
-      await Promise.all(editNotes.map(note => 
+      await Promise.all(editNotes.map(note =>
         fetch(`https://localhost:7237/api/Note/UpdateNote/${note.id}`, {
           method: "PUT",
           headers: {
@@ -127,7 +152,7 @@ export default function Notes({ taskId }) {
       <h4>Notes</h4>
       {notes.length > 0 ? (
         <ul>
-          {notes.map((note, index) => (
+          {notes.filter(note => note.content !== "DOC").map((note, index) => (
             <li key={note.id}>
               {isEditMode ? (
                 <div>
@@ -139,7 +164,7 @@ export default function Notes({ taskId }) {
                 </div>
               ) : (
                 <div>
-                  <p> {note.content}</p>
+                  <p>{note.content}</p>
                   <Button className="btn-sm" variant="danger" onClick={() => handleDeleteNote(note.id)}>Delete</Button>
                 </div>
               )}
@@ -162,15 +187,15 @@ export default function Notes({ taskId }) {
           onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
           placeholder="Add a new note"
         />
-        {/* Hide the pathToDoc field */}
-        {/* <Form.Control
-          type="text"
-          name="pathToDoc"
-          value={newNote.pathToDoc}
-          onChange={(e) => setNewNote({ ...newNote, pathToDoc: e.target.value })}
-          placeholder="Path to document"
-        /> */}
         <Button className="btn btn-info my-2" onClick={handleAddNote}>Add Note</Button>
+        <Form.Group controlId="formFileUpload">
+          <Form.Label>Upload File</Form.Label>
+          <Form.Control
+            type="file"
+            onChange={handleFileChange}
+          />
+        </Form.Group>
+        <Button className="btn btn-info my-2" onClick={handleFileUpload}>Upload File</Button>
       </div>
     </div>
   );

@@ -198,35 +198,6 @@ export default function EmployeeDetail() {
                         <p>Completed: {task.isCompleted ? "Yes" : "No"}</p>
                       </div>
                       <div>
-                        {visibleFileInput === task.id ? (
-                          <div>
-                            <Form.Group controlId={`formFile${task.id}`}>
-                              <Form.Control
-                                type="file"
-                                onChange={handleFileChange}
-                              />
-                            </Form.Group>
-                            <Button
-                              className="btn btn-sm btn-info mx-2 my-2"
-                              onClick={() => handleFileUpload(task.id)}
-                            >
-                              Upload Files
-                            </Button>
-                            <Button
-                              className="btn btn-sm btn-danger mx-2 my-2"
-                              onClick={handleCancelUpload}
-                            >
-                              Cancel
-                            </Button>
-                          </div>
-                        ) : (
-                          <Button
-                            className="btn btn-info mx-2 my-2"
-                            onClick={() => setVisibleFileInput(task.id)}
-                          >
-                            Upload File
-                          </Button>
-                        )}
                         <Button
                           className="btn btn-info mx-2 my-2"
                           onClick={() => markTaskCompleted(task.id)}
